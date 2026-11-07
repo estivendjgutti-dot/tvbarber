@@ -290,6 +290,12 @@ class MainActivity : Activity() {
         if (current.add(pkg)) dpm().setLockTaskPackages(adminComponent(), current.toTypedArray())
     }
 
+    /** Fecha o app (some da lista de recentes). Com Autostart ligado o Android reabre, pois somos a tela Início. */
+    fun closeApp() {
+        try { stopLockTask() } catch (_: Exception) {}
+        finishAndRemoveTask()
+    }
+
     /** Sai do kiosk e remove o Device Owner (acesso do técnico). */
     fun exitKiosk() {
         if (!isDeviceOwner()) return

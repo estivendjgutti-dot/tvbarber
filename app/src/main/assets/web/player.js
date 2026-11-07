@@ -424,19 +424,44 @@
   }
 
   // ------------------------------------------------------------------ painel técnico
+  // Atalhos de teclado (com o painel fechado):
+  //   ↑ ↑ ↓ ↓  abre o painel técnico (apps, configurações, autostart...)
+  //   ↓ ↓ ↑ ↑  FECHA o TV Launcher direto
   const SECRET = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown'];
-  let seq = [], seqTimer = null;
+  const QUIT = ['ArrowDown', 'ArrowDown', 'ArrowUp', 'ArrowUp'];
+  let seq = [], seqTimer = null, quitArmed = false;
   const adminOpen = () => !$('admin').hidden;
 
+  // ---- cursor do mouse e botão "Menu": aparecem ao mexer o mouse/tocar, somem após 3,5 s parado
+  let idleT = null;
+  function wake() {
+    document.body.classList.remove('idle');
+    clearTimeout(idleT);
+    idleT = setTimeout(() => { if (!adminOpen()) document.body.classList.add('idle'); }, 3500);
+  }
+  ['mousemove', 'mousedown', 'pointerdown', 'touchstart'].forEach((ev) => addEventListener(ev, wake, { passive: true }));
+  $('menuBtn').addEventListener('click', () => openAdmin());
+
+  // aviso rápido na tela
+  let toastT = null;
+  function toast(text) {
+    const t = $('toast'); t.textContent = text; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 5000);
+  }
+
+  function showMain() { $('appList').hidden = true; $('adminMain').hidden = false; }
   function openAdmin() {
     let info = { screen: cfg.screenId, slides: (cfg.slides || []).length, sponsors: (cfg.sponsors || []).length, playlist: cfg.remotePlaylistUrl || 'local' };
     try { if (A) info = { ...info, ...JSON.parse(A.deviceInfo()) }; } catch { /* sem ponte */ }
     $('adminInfo').textContent = JSON.stringify(info, null, 2);
     $('adminOut').textContent = '';
+    quitArmed = false;
+    showMain();
     $('admin').hidden = false;
+    wake();
     $('admin').querySelector('button').focus();
   }
-  function closeAdmin() { $('admin').hidden = true; }
+  function closeAdmin() { $('admin').hidden = true; showMain(); wake(); }
 
   function statsReport() {
     const stats = store.get('sponsor.stats', {});
@@ -445,13 +470,43 @@
     return rows.length ? rows.join('\n') : 'Nenhuma exibição registrada ainda.';
   }
 
+  // Lista os apps instalados para abrir (mouse, toque ou D-pad)
+  function showApps() {
+    const out = $('adminOut');
+    if (!A || !A.listApps) { out.textContent = 'Disponível só no aparelho.'; return; }
+    let apps = [];
+    try { apps = JSON.parse(A.listApps()); } catch { /* sem lista */ }
+    const list = $('appList');
+    list.innerHTML = '<button class="back" data-act="appsBack">← Voltar</button>'
+      + (apps.length ? apps.map((a) => `<button data-pkg="${esc(a.package)}">${esc(a.label)}</button>`).join('')
+        : '<span style="grid-column:1/-1;color:#94a3b8;font-size:26px">Nenhum app encontrado.</span>');
+    $('adminMain').hidden = true; list.hidden = false;
+    list.querySelector('button').focus();
+  }
+
+  // Fecha o TV Launcher. Com o Autostart ligado o Android abre o app de novo (ele é a tela Início).
+  function quitApp(force) {
+    if (!A || !A.closeApp) { toast('Para fechar o app, instale o APK mais novo (esta versão não tem essa função).'); return; }
+    if (!force && A.isHomeEnabled && A.isHomeEnabled() && !quitArmed) {
+      quitArmed = true;
+      $('adminOut').textContent = 'O Autostart está LIGADO: o Android abre o app de novo ao sair. Desligue o Autostart (botão acima) para sair de vez, ou clique em "Fechar" outra vez para fechar assim mesmo.';
+      return;
+    }
+    A.closeApp();
+  }
+
   $('admin').addEventListener('click', (e) => {
+    const pkg = e.target.dataset && e.target.dataset.pkg;
+    if (pkg) { closeAdmin(); if (A) A.launchApp(pkg); return; }
     const act = e.target.dataset && e.target.dataset.act;
     if (!act) return;
     const out = $('adminOut');
+    if (act !== 'quit') quitArmed = false;
     if (act === 'reload') { closeAdmin(); boot(); }
     if (act === 'stats') out.textContent = statsReport();
     if (act === 'resetStats') { store.set('sponsor.stats', {}); out.textContent = 'Relatório zerado.'; }
+    if (act === 'apps') showApps();
+    if (act === 'appsBack') { showMain(); $('admin').querySelector('button').focus(); }
     if (act === 'settings') { if (A) A.openSettings(); else out.textContent = 'Disponível só no aparelho.'; }
     if (act === 'home') {
       if (A && A.setHomeEnabled) {
@@ -461,16 +516,18 @@
           : 'Autostart DESLIGADO. O app abre no Samsung DeX, mas não inicia sozinho no boot.';
       } else out.textContent = 'Disponível só no aparelho.';
     }
+    if (act === 'quit') quitApp(false);
     if (act === 'exitKiosk') { if (A) { A.exitKiosk(); out.textContent = 'Kiosk desativado.'; } else out.textContent = 'Disponível só no aparelho.'; }
     if (act === 'close') closeAdmin();
   });
 
   function moveFocus(dir) {
-    const btns = [...$('admin').querySelectorAll('button')];
+    const btns = [...$('admin').querySelectorAll('button')].filter((b) => b.offsetParent);
     const i = btns.indexOf(document.activeElement);
     const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -2, ArrowDown: 2 }[dir];
     const n = Math.min(btns.length - 1, Math.max(0, (i < 0 ? 0 : i) + step));
     btns[n].focus();
+    btns[n].scrollIntoView({ block: 'nearest' });
   }
 
   addEventListener('keydown', (e) => {
@@ -478,18 +535,19 @@
     if (adminOpen()) {
       if (k.startsWith('Arrow')) { e.preventDefault(); moveFocus(k); }
       else if (k === 'Enter' || e.keyCode === 23) { e.preventDefault(); document.activeElement.click(); }
-      else if (k === 'Escape' || k === 'Backspace') closeAdmin();
+      else if (k === 'Escape' || k === 'Backspace') { if (!$('appList').hidden) showMain(); else closeAdmin(); }
       return;
     }
     seq.push(k); seq = seq.slice(-SECRET.length);
     clearTimeout(seqTimer); seqTimer = setTimeout(() => { seq = []; }, 3000);
     if (SECRET.every((s, i) => seq[i] === s)) { seq = []; openAdmin(); return; }
+    if (QUIT.every((s, i) => seq[i] === s)) { seq = []; quitApp(true); return; }
     if (k === 'ArrowRight') next();
     if (k === 'ArrowLeft') prev();
   });
 
   // Ganchos chamados pelo app Android
-  window.onAndroidBack = () => { if (adminOpen()) closeAdmin(); };
+  window.onAndroidBack = () => { if (adminOpen()) { if (!$('appList').hidden) showMain(); else closeAdmin(); } };
   window.onAndroidHome = () => closeAdmin();
   window.onAndroidResume = () => clock();
 

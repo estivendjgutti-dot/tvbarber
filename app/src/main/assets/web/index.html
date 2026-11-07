@@ -6,13 +6,15 @@
 <title>TV Clínica</title>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Palco fixo 1920x1080, escalado pra qualquer TV (HD, Full HD, 4K) -->
+<body class="idle">
+  <!-- Palco 1920x1080 de referência, escalado pra qualquer tela -->
   <div id="stage">
     <header id="topbar">
       <div class="brand"><img id="logo" alt=""><span id="brandName"></span></div>
       <div class="clock"><span id="time">--:--</span><span id="date"></span></div>
     </header>
+    <button id="menuBtn" type="button">⚙ Menu</button>
+    <div id="toast" hidden></div>
 
     <main id="slides"></main>
 
@@ -27,17 +29,22 @@
     <div id="admin" hidden>
       <div class="admin-box">
         <h2>Painel técnico</h2>
-        <pre id="adminInfo"></pre>
-        <div class="admin-actions">
-          <button data-act="reload">Recarregar conteúdo</button>
-          <button data-act="stats">Relatório de patrocinadores</button>
-          <button data-act="resetStats">Zerar relatório</button>
-          <button data-act="settings">Configurações do aparelho</button>
-          <button data-act="home">Autostart (tela Início): ligar/desligar</button>
-          <button data-act="exitKiosk">Sair do modo kiosk</button>
-          <button data-act="close">Fechar</button>
+        <div id="adminMain">
+          <pre id="adminInfo"></pre>
+          <div class="admin-actions">
+            <button data-act="apps">Abrir outro aplicativo</button>
+            <button data-act="settings">Configurações do aparelho</button>
+            <button data-act="reload">Recarregar conteúdo</button>
+            <button data-act="home">Autostart (tela Início): ligar/desligar</button>
+            <button data-act="stats">Relatório de patrocinadores</button>
+            <button data-act="resetStats">Zerar relatório</button>
+            <button data-act="exitKiosk">Sair do modo kiosk</button>
+            <button data-act="quit" class="danger">Fechar o TV Launcher</button>
+            <button data-act="close">Voltar para a TV</button>
+          </div>
+          <pre id="adminOut"></pre>
         </div>
-        <pre id="adminOut"></pre>
+        <div id="appList" class="app-list" hidden></div>
       </div>
     </div>
   </div>

@@ -45,6 +45,17 @@ Com `statsUrl` configurado, as exibições são enviadas por POST a cada 5 min (
 (nome já encurtado) em JSON. Instalação no próprio arquivo; depois é só colocar a URL em `agendaUrl`.
 A TV atualiza a cada 2 min e guarda cache se ficar sem internet. Título do evento: `Nome - Serviço`.
 
+## Atalhos (teclado, controle ou mouse)
+
+| Atalho | O que faz |
+|---|---|
+| ← → | slide anterior / próximo |
+| ↑ ↑ ↓ ↓ | abre o **painel técnico** (abrir outro app, configurações, autostart, relatório) |
+| **↓ ↓ ↑ ↑** | **fecha o TV Launcher** direto |
+| mexer o mouse / tocar | aparece o cursor e o botão **⚙ Menu** (abre o painel técnico); somem após ~3,5 s parado |
+
+O fechar exige APK com `closeApp` (Build 8 em diante). Com o Autostart ligado o Android reabre o app, pois ele é a tela Início.
+
 ## Painel de conteúdo (sem reinstalar o app)
 
 `https://estivendjgutti-dot.github.io/tvbarber/painel/`: liga/desliga slides e patrocinados, muda textos,

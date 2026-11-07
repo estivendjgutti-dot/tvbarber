@@ -92,6 +92,13 @@ class JsBridge(
         activity.runOnUiThread { activity.loadStart() }
     }
 
+    /** Fecha o TV Launcher (atalho ↓ ↓ ↑ ↑ ou painel técnico). */
+    @JavascriptInterface
+    fun closeApp() {
+        if (!isTrusted()) return
+        activity.runOnUiThread { activity.closeApp() }
+    }
+
     /** Desliga o kiosk (lock task + Device Owner). Proteja com PIN/combinação na UI. */
     @JavascriptInterface
     fun exitKiosk() {
