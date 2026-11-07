@@ -44,7 +44,7 @@ body { font-family: system-ui, "Roboto", "Segoe UI", sans-serif; color: var(--te
 .slide.show { opacity: 1; }
 .slide img, .slide video { display: block; }
 
-.full img, .full video, .sponsor img, .sponsor video { width: 100%; height: 100%; object-fit: cover; }
+.full img, .full video, .sponsor:not(.rich) img, .sponsor:not(.rich) video { width: 100%; height: 100%; object-fit: cover; }
 .full .caption {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 140px 80px 56px;
   background: linear-gradient(0deg, rgba(0,0,0,.8), rgba(0,0,0,0));
@@ -56,7 +56,8 @@ h2 { font-size: 64px; line-height: 1.1; font-weight: 800; }
 .ba { display: flex; flex-direction: column; padding: 130px 80px 40px; gap: 28px; }
 .ba-pair { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; min-height: 0; }
 .ba figure { position: relative; border-radius: 22px; overflow: hidden; background: #111; }
-.ba figure img { width: 100%; height: 100%; object-fit: cover; }
+/* Ancorado no topo: o que importa é o cabelo, então corta só embaixo (camiseta) */
+.ba figure img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
 .ba figcaption {
   position: absolute; top: 24px; left: 24px; padding: 10px 26px; border-radius: 999px;
   font-size: 30px; font-weight: 800; letter-spacing: 2px; background: rgba(0,0,0,.7);
@@ -126,6 +127,89 @@ h2 { font-size: 64px; line-height: 1.1; font-weight: 800; }
   background: #1f2937; color: #fff; text-align: left; outline: none;
 }
 .admin-actions button:focus { border-color: var(--accent); background: #374151; }
+
+/* ---------- lista de benefícios (produto e patrocinado) ---------- */
+.benefits { list-style: none; display: flex; flex-direction: column; gap: 18px; margin-top: 34px; }
+.benefits li { display: flex; align-items: center; gap: 18px; font-size: 34px; font-weight: 600; line-height: 1.2; }
+.benefits svg { width: 46px; height: 46px; flex: none; color: var(--sp, var(--accent)); }
+
+/* ---------- produto com foto de benefício ---------- */
+.product.hero { display: block; padding: 0; }
+.hero-bg, .hero-bg img, .hero-bg video { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-bg img, .hero-bg video { object-fit: cover; object-position: left center; }
+.hero-panel {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 36%;
+  display: flex; flex-direction: column; justify-content: center; padding: 120px 70px 40px 50px;
+  background: linear-gradient(90deg, rgba(4,7,16,0) 0%, rgba(4,7,16,.85) 10%, rgba(4,7,16,.95) 100%);
+}
+.hero-panel .tag { align-self: flex-start; }
+.hero-panel h2 { font-size: 62px; }
+.hero-panel p { font-size: 30px; color: var(--muted); margin-top: 14px; line-height: 1.35; }
+.hero-panel .price { font-size: 76px; margin-top: 28px; white-space: nowrap; }
+.hero-panel .benefits li { font-size: 30px; }
+.hero-panel .benefits svg { width: 42px; height: 42px; }
+
+/* ---------- patrocinado completo ---------- */
+.sponsor.rich {
+  --sp: var(--accent);
+  background: radial-gradient(circle at 18% 30%, rgba(255,255,255,.07), transparent 55%), #070b16;
+}
+.sp-info {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 52%; z-index: 2;
+  display: flex; flex-direction: column; justify-content: center; padding: 130px 40px 40px 100px;
+}
+.sp-brand { display: flex; align-items: center; gap: 24px; margin-bottom: 26px; }
+.sp-brand.wide .sp-logo { height: 118px; max-width: 520px; object-fit: contain; object-position: left center; }
+.sp-brand.mark .sp-logo { width: 96px; height: 96px; border-radius: 22px; }
+.sp-brand span { font-size: 56px; font-weight: 800; letter-spacing: -.5px; }
+.sp-info h2 { font-size: 60px; line-height: 1.08; }
+.sp-info p { font-size: 30px; color: var(--muted); margin-top: 14px; line-height: 1.35; }
+.sp-cta { display: flex; align-items: center; gap: 28px; margin-top: 30px; }
+.sp-qr { width: 164px; height: 164px; background: #fff; padding: 10px; border-radius: 18px; flex: none; }
+.sp-cta b { display: block; font-size: 34px; color: var(--sp); }
+.sp-cta span { display: block; font-size: 28px; color: var(--muted); margin-top: 8px; }
+.sp-visual { position: absolute; z-index: 1; }
+.sp-visual.photo { top: 0; right: 0; bottom: 0; width: 56%; }
+.sp-visual.photo img, .sp-visual.photo video { width: 100%; height: 100%; object-fit: cover; }
+.sp-visual.photo::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #070b16 0%, rgba(7,11,22,.55) 30%, rgba(7,11,22,0) 60%); }
+.sp-visual.screen, .sp-visual.tv {
+  top: 50%; right: 80px; width: 44%; transform: translateY(-46%);
+  border-radius: 22px; overflow: hidden; background: #0b1220;
+  box-shadow: 0 40px 90px rgba(0,0,0,.55), 0 0 0 2px rgba(255,255,255,.08);
+}
+.sp-visual.screen img, .sp-visual.tv img { display: block; width: 100%; height: auto; }
+.sp-bar { display: flex; gap: 10px; padding: 14px 18px; background: #1b2333; }
+.sp-bar i { width: 14px; height: 14px; border-radius: 50%; background: #3b465c; }
+.sp-visual.tv { border: 16px solid #111; border-radius: 18px; }
+.sponsor.rich .chip { z-index: 3; }
+.sponsor.rich .benefits { margin-top: 24px; gap: 12px; }
+.sponsor.rich .benefits li { font-size: 30px; }
+.sponsor.rich .benefits svg { width: 40px; height: 40px; }
+
+/* ---------- portal de notícias ---------- */
+.np { display: flex; flex-direction: column; padding: 124px 70px 34px; gap: 26px;
+  background: radial-gradient(circle at 80% 0%, rgba(255,255,255,.06), transparent 50%), var(--primary); }
+.np-head { display: flex; align-items: center; gap: 24px; }
+.np-badge { background: var(--accent); color: #111; font-size: 30px; font-weight: 900; letter-spacing: 2px;
+  padding: 10px 26px; border-radius: 10px; text-transform: uppercase; }
+.np-upd { font-size: 26px; color: var(--muted); margin-left: auto; }
+.np-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.65fr 1fr; gap: 30px; }
+.np-lead { position: relative; border-radius: 24px; overflow: hidden; background: #111827; }
+.np-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.np-img.noimg, .np-thumb.noimg { background: linear-gradient(135deg, #1f2937, #0b1020); }
+.np-txt { position: absolute; left: 0; right: 0; bottom: 0; padding: 140px 46px 40px;
+  background: linear-gradient(0deg, rgba(0,0,0,.9), rgba(0,0,0,.55) 60%, rgba(0,0,0,0)); }
+.np-txt h2 { font-size: 54px; line-height: 1.12; }
+.np-txt p { font-size: 28px; color: #d6dbe4; margin-top: 14px; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.np .src { display: block; font-size: 24px; font-weight: 700; color: var(--accent); margin-bottom: 10px; letter-spacing: .5px; }
+.np-side { display: flex; flex-direction: column; gap: 22px; min-height: 0; }
+.np-item { flex: 1; min-height: 0; display: flex; gap: 22px; align-items: center;
+  background: rgba(255,255,255,.06); border-radius: 20px; padding: 16px; overflow: hidden; }
+.np-thumb { width: 240px; height: 100%; max-height: 180px; flex: none; object-fit: cover; border-radius: 14px; }
+.np-item h3 { font-size: 30px; line-height: 1.2; font-weight: 700;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* ---------- agenda do dia ---------- */
 .agenda { background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; padding: 120px 140px 40px; }

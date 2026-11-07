@@ -3,6 +3,14 @@ name: Build APK
 on:
   push:
     branches: [main]
+    # Conteúdo/player web vai pelo GitHub Pages (pages.yml): não precisa de APK novo.
+    paths-ignore:
+      - "app/src/main/assets/web/**"
+      - "painel/**"
+      - "tools/**"
+      - "docs/**"
+      - "**.md"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 jobs:

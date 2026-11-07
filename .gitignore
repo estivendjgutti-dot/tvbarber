@@ -6,3 +6,6 @@ local.properties
 *.keystore
 .idea/
 *.iml
+
+# gerado pelo GitHub Actions (tools/build_news.py)
+app/src/main/assets/web/news.json

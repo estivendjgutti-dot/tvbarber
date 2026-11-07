@@ -1,4 +1,5 @@
 {
+  "version": "2026-11-07.1",
   "screenId": "leandro-sales-recepcao-1",
   "remotePlaylistUrl": "",
   "refreshMinutes": 10,
@@ -6,7 +7,7 @@
   "sponsorDuration": 12,
   "sponsorEvery": 3,
   "statsUrl": "",
-  "newsUrl": "",
+  "newsUrl": "news.json",
   "newsRefreshMinutes": 15,
   "tickerSpeed": 110,
   "agendaUrl": "",
@@ -37,6 +38,12 @@
       "text": "Individual, presencial e sem compromisso. Sistema capilar personalizado: cor, densidade, textura e linha frontal sob medida."
     },
     {
+      "type": "newsPortal",
+      "title": "Notícias da região",
+      "feed": "local,brasil",
+      "duration": 16
+    },
+    {
       "type": "product",
       "image": "media/produto-1.jpg",
       "tag": "Cuidados pós-aplicação",
@@ -44,7 +51,13 @@
       "text": "Shampoo e condicionador específicos para prolongar a vida útil da prótese.",
       "price": "R$ 149,90",
       "priceNote": "(exemplo)",
-      "cta": "Pergunte na recepção"
+      "cta": "Pergunte na recepção",
+      "hero": "media/produto-1-beneficio.jpg",
+      "benefits": [
+        "Limpa sem agredir a base da prótese",
+        "Brilho e caimento natural",
+        "Prolonga a vida útil do sistema"
+      ]
     },
     {
       "type": "image",
@@ -60,7 +73,19 @@
       "text": "Pensado para treino, natação e rotina diária.",
       "price": "R$ 89,90",
       "priceNote": "(exemplo)",
-      "cta": "Pergunte na recepção"
+      "cta": "Pergunte na recepção",
+      "hero": "media/produto-2-beneficio.jpg",
+      "benefits": [
+        "Resiste a suor e água",
+        "Firme no treino e na piscina",
+        "Segurança o dia todo"
+      ]
+    },
+    {
+      "type": "newsPortal",
+      "title": "Esportes",
+      "feed": "esportes",
+      "duration": 16
     },
     {
       "type": "promo",
@@ -74,6 +99,81 @@
     }
   ],
   "sponsors": [
+    {
+      "id": "estiven4tech-sites",
+      "name": "Estiven4Tech",
+      "color": "#3b9bff",
+      "logo": "media/sponsors/estiven4tech-logo.png",
+      "headline": "Sites que trazem clientes pelo Google e pelo WhatsApp",
+      "text": "Landing pages e automação com IA para clínicas, academias, estética e beleza.",
+      "benefits": [
+        "Visual profissional, feito para o celular",
+        "Aparece no Google da sua cidade",
+        "WhatsApp e agendamento em um toque"
+      ],
+      "cta": "Aponte a câmera e peça seu orçamento",
+      "contact": "WhatsApp (12) 99647-2884",
+      "qr": "media/sponsors/qr-estiven4tech.svg",
+      "image": "media/sponsors/estiven4tech-sites.jpg",
+      "visualStyle": "photo"
+    },
+    {
+      "id": "crm4tech",
+      "name": "CRM4Tech",
+      "color": "#32c7f4",
+      "logo": "media/sponsors/crm4tech-mark.svg",
+      "logoText": "CRM4Tech",
+      "headline": "Atendimento que vira venda",
+      "text": "CRM com WhatsApp e agentes de IA: todo contato respondido e acompanhado até fechar.",
+      "benefits": [
+        "Inbox do WhatsApp para toda a equipe",
+        "Funil de vendas e follow-up automático",
+        "Agentes de IA que respondem 24 horas"
+      ],
+      "cta": "Aponte a câmera e conheça o CRM4Tech",
+      "contact": "WhatsApp (12) 98801-0100",
+      "qr": "media/sponsors/qr-crm4tech.svg",
+      "image": "media/sponsors/crm4tech-tela.jpg",
+      "visualStyle": "screen"
+    },
+    {
+      "id": "med4tech",
+      "name": "Med4Tech",
+      "color": "#3dbfa5",
+      "logo": "media/sponsors/med4tech-mark.svg",
+      "logoText": "Med4Tech",
+      "headline": "Do consentimento à receita assinada, num fluxo só",
+      "text": "Prontuário de teleconsulta para médicos que estão começando na telemedicina.",
+      "benefits": [
+        "Check-list do atendimento com as regras do CFM",
+        "Receita digital com assinatura ICP-Brasil",
+        "Dados no Brasil, cifrados e com LGPD"
+      ],
+      "cta": "Em breve · entre na lista de espera",
+      "contact": "WhatsApp (12) 99647-2884",
+      "qr": "media/sponsors/qr-med4tech.svg",
+      "image": "media/sponsors/med4tech-tela.jpg",
+      "visualStyle": "screen"
+    },
+    {
+      "id": "estiven4tv",
+      "name": "Estiven4TV",
+      "color": "#58e3ff",
+      "logo": "media/sponsors/estiven4tv-mark.svg",
+      "logoText": "Estiven4TV",
+      "headline": "Sua marca nesta TV",
+      "text": "Anuncie para quem está na sala de espera de clínicas e salões da região.",
+      "benefits": [
+        "Público local, sentado e atento",
+        "Relatório de exibições para comprovar",
+        "Anúncio atualizado a distância"
+      ],
+      "cta": "Aponte a câmera e reserve seu espaço",
+      "contact": "WhatsApp (12) 99647-2884",
+      "qr": "media/sponsors/qr-estiven4tv.svg",
+      "image": "media/sponsors/estiven4tv-tela.jpg",
+      "visualStyle": "tv"
+    },
     {
       "id": "patrocinador-1",
       "name": "Academia (exemplo)",
@@ -93,10 +193,6 @@
     },
     {
       "title": "Manutenção periódica prolonga a durabilidade do seu sistema capilar"
-    },
-    {
-      "title": "Configure \"newsUrl\" para puxar notícias automaticamente",
-      "source": "Sistema"
     }
   ],
   "agenda": [
@@ -132,5 +228,6 @@
       "service": "Aplicação do sistema capilar",
       "duration": 120
     }
-  ]
+  ],
+  "tickerHeadlines": 6
 }

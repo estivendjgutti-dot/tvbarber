@@ -45,6 +45,20 @@ Com `statsUrl` configurado, as exibições são enviadas por POST a cada 5 min (
 (nome já encurtado) em JSON. Instalação no próprio arquivo; depois é só colocar a URL em `agendaUrl`.
 A TV atualiza a cada 2 min e guarda cache se ficar sem internet. Título do evento: `Nome - Serviço`.
 
+## Painel de conteúdo (sem reinstalar o app)
+
+`https://estivendjgutti-dot.github.io/tvbarber/painel/`: liga/desliga slides e patrocinados, muda textos,
+preços, datas de contrato, ordem, envia fotos e salva. A TV atualiza sozinha em até 10 minutos.
+Precisa de uma chave do GitHub (fine-grained token, só o repositório tvbarber, *Contents: Read and write*);
+o passo a passo está no próprio painel. A chave fica só no aparelho de quem editou.
+
+O player fica publicado no mesmo endereço (`/tvbarber/`), que também serve para testar em qualquer navegador.
+Para a TV usar essa versão online, defina a variável do repositório `START_URL` com esse endereço e gere um APK
+(Actions › Build APK › Run workflow). Sem internet, o app usa a cópia que veio dentro do APK.
+
+Notícias: `tools/build_news.py` lê o RSS do g1 Vale do Paraíba, ge e g1 a cada 30 min e publica `news.json`.
+Slide `newsPortal` mostra manchete, foto e fonte; a faixa de baixo mistura recados da clínica e manchetes.
+
 ## Atualizar conteúdo sem reinstalar (OTA)
 
 Hospede um `playlist.json` (Vercel, GitHub Pages, Supabase Storage…) com CORS liberado e coloque a URL em

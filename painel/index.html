@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Painel da TV</title>
+<style>
+  :root { --bg:#0b1020; --card:#141b2e; --line:#26304a; --text:#eef2f8; --muted:#94a0b8; --accent:#c8a45c; --ok:#3ccf8e; --bad:#ef6a5b; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.4 system-ui, Roboto, "Segoe UI", sans-serif; padding-bottom:96px; }
+  header { position:sticky; top:0; z-index:5; background:rgba(11,16,32,.96); border-bottom:1px solid var(--line); padding:12px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; flex:1; }
+  a { color:var(--accent); }
+  main { max-width:860px; margin:0 auto; padding:16px; }
+  section { margin:22px 0; }
+  h2 { font-size:15px; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+  h2 .grow { flex:1; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; margin-bottom:10px; }
+  .row { display:flex; align-items:center; gap:10px; padding:12px; }
+  .row .t { flex:1; min-width:0; }
+  .row .t b { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .row .t small { color:var(--muted); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .badge { font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:3px 8px; border-radius:6px; background:#2a3550; color:#c9d3e6; }
+  .off .row .t b, .off .row .t small { opacity:.45; text-decoration:line-through; }
+  button, .btn { font:inherit; border:1px solid var(--line); background:#1d2640; color:var(--text); border-radius:10px; padding:8px 12px; cursor:pointer; text-decoration:none; display:inline-block; }
+  button.icon { padding:6px 10px; }
+  button.primary { background:var(--accent); color:#111; border-color:var(--accent); font-weight:800; }
+  button:disabled { opacity:.5; }
+  .switch { position:relative; width:46px; height:26px; flex:none; }
+  .switch input { opacity:0; width:0; height:0; }
+  .switch span { position:absolute; inset:0; background:#3a4560; border-radius:99px; transition:.2s; }
+  .switch span::after { content:""; position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:.2s; }
+  .switch input:checked + span { background:var(--ok); }
+  .switch input:checked + span::after { left:23px; }
+  .edit { border-top:1px solid var(--line); padding:12px; display:grid; gap:10px; }
+  label { display:grid; gap:4px; font-size:13px; color:var(--muted); }
+  input, textarea, select { font:inherit; color:var(--text); background:#0e1426; border:1px solid var(--line); border-radius:10px; padding:9px 10px; width:100%; }
+  textarea { min-height:70px; resize:vertical; }
+  .img { display:flex; gap:8px; align-items:center; }
+  .img img { width:64px; height:44px; object-fit:cover; border-radius:6px; background:#000; flex:none; }
+  .img input[type=text] { flex:1; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .add { display:flex; gap:8px; flex-wrap:wrap; }
+  #bar { position:fixed; left:0; right:0; bottom:0; background:rgba(11,16,32,.97); border-top:1px solid var(--line); padding:12px 16px; display:flex; gap:10px; align-items:center; }
+  #msg { flex:1; font-size:14px; color:var(--muted); }
+  #msg.ok { color:var(--ok); } #msg.bad { color:var(--bad); }
+  .help { background:#101830; border:1px dashed var(--line); border-radius:12px; padding:12px 14px; color:var(--muted); font-size:14px; }
+  .help ol { margin:6px 0 0 18px; padding:0; }
+  details summary { cursor:pointer; color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>📺 Painel da TV</h1>
+  <a class="btn" id="openTv" href="../" target="_blank">Ver a TV</a>
+</header>
+<main>
+  <section id="login" class="card" style="padding:14px">
+    <label>Chave de acesso do GitHub (fica só neste aparelho)
+      <input id="token" type="password" autocomplete="off" placeholder="github_pat_...">
+    </label>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="primary" id="btnLoad">Entrar e carregar</button>
+      <button id="btnForget">Esquecer chave</button>
+    </div>
+    <details style="margin-top:10px"><summary>Como criar a chave (uma vez só)</summary>
+      <div class="help"><ol>
+        <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com › Fine-grained token</a>.</li>
+        <li>Nome: "Painel TV". Validade: 1 ano.</li>
+        <li>Repository access: <b>Only select repositories</b> › <b>tvbarber</b>.</li>
+        <li>Permissions › Repository › <b>Contents: Read and write</b>.</li>
+        <li>Gere, copie e cole aqui. Não envie a chave para ninguém.</li>
+      </ol></div>
+    </details>
+  </section>
+
+  <div id="editor" hidden>
+    <section>
+      <h2><span class="grow">Slides da clínica</span></h2>
+      <div id="slides"></div>
+      <div class="add">
+        <button data-add="promo">+ Texto</button><button data-add="product">+ Produto</button>
+        <button data-add="image">+ Foto</button><button data-add="beforeAfter">+ Antes/depois</button>
+        <button data-add="newsPortal">+ Notícias</button>
+      </div>
+    </section>
+    <section>
+      <h2><span class="grow">Patrocinados</span></h2>
+      <div id="sponsors"></div>
+      <div class="add"><button data-add="sponsor">+ Patrocinado</button></div>
+    </section>
+    <section>
+      <h2><span class="grow">Recados na faixa de baixo</span></h2>
+      <div class="card" style="padding:12px">
+        <label>Um recado por linha<textarea id="ticker" rows="4"></textarea></label>
+      </div>
+    </section>
+    <section>
+      <h2><span class="grow">Ajustes</span></h2>
+      <div class="card edit" style="border-top:0">
+        <div class="two">
+          <label>Segundos por slide<input type="number" min="4" id="cfgDur"></label>
+          <label>Patrocinado a cada N slides<input type="number" min="1" id="cfgEvery"></label>
+        </div>
+        <label>Nome no topo da tela<input id="cfgName"></label>
+      </div>
+    </section>
+  </div>
+</main>
+<div id="bar">
+  <span id="msg">Entre com a chave para editar.</span>
+  <button class="primary" id="btnSave" disabled>Salvar e publicar</button>
+</div>
+
+<script>
+(() => {
+  const OWNER = 'estivendjgutti-dot', REPO = 'tvbarber', BRANCH = 'main';
+  const WEB = 'app/src/main/assets/web/';
+  const PATH = WEB + 'playlist.json';
+  const PLAYER = new URL('../', location.href).href;
+  const API = `https://api.github.com/repos/${OWNER}/${REPO}/contents/`;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let data = null, sha = null, dirty = false;
+
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k) || ''; } catch { return ''; } },
+    set: (k, v) => { try { v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch { /* sem storage */ } },
+  };
+  $('token').value = store.get('tv.gh_token');
+
+  function msg(t, cls = '') { $('msg').textContent = t; $('msg').className = cls; }
+  function markDirty() { dirty = true; $('btnSave').disabled = false; msg('Alterações não salvas.'); }
+
+  // ---------- GitHub
+  const headers = () => {
+    const h = { Accept: 'application/vnd.github+json' }, t = $('token').value.trim();
+    if (t) h.Authorization = 'Bearer ' + t;   // sem chave: só leitura (repositório público)
+    return h;
+  };
+  const b64encode = (bytes) => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(s); };
+  const b64decodeText = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, '')), (c) => c.charCodeAt(0)));
+
+  async function load() {
+    msg('Carregando...');
+    const r = await fetch(API + PATH + '?ref=' + BRANCH + '&t=' + Date.now(), { headers: headers(), cache: 'no-store' });
+    if (r.status === 401) throw new Error('Chave inválida ou vencida.');
+    if (!r.ok) throw new Error('GitHub respondeu ' + r.status);
+    const j = await r.json();
+    sha = j.sha;
+    data = JSON.parse(b64decodeText(j.content));
+    store.set('tv.gh_token', $('token').value.trim());
+    $('login').hidden = true; $('editor').hidden = false;
+    render(); dirty = false; $('btnSave').disabled = true;
+    msg('Pronto. Edite e toque em "Salvar e publicar".');
+  }
+
+  async function putFile(path, base64, message, fileSha) {
+    const body = { message, content: base64, branch: BRANCH };
+    if (fileSha) body.sha = fileSha;
+    const r = await fetch(API + path, { method: 'PUT', headers: headers(), body: JSON.stringify(body) });
+    if (r.status === 409 || r.status === 422) throw new Error('O conteúdo mudou em outro lugar. Recarregue a página e refaça.');
+    if (!r.ok) throw new Error('Falha ao salvar (' + r.status + ').');
+    return r.json();
+  }
+
+  async function save() {
+    collectGlobals();
+    if (!$('token').value.trim()) { $('login').hidden = false; msg('Para salvar, cole a chave do GitHub no topo.', 'bad'); scrollTo(0, 0); return; }
+    $('btnSave').disabled = true; msg('Publicando...');
+    try {
+      const text = JSON.stringify(data, null, 2) + '\n';
+      const res = await putFile(PATH, b64encode(new TextEncoder().encode(text)), 'Conteúdo da TV atualizado pelo painel', sha);
+      sha = res.content.sha; dirty = false;
+      msg('Salvo! A TV atualiza sozinha em até 10 minutos.', 'ok');
+    } catch (e) { $('btnSave').disabled = false; msg(e.message, 'bad'); }
+  }
+
+  // Foto: reduz para no máx. 1920px, JPEG 85%, envia para media/uploads/
+  async function uploadImage(file) {
+    const img = await createImageBitmap(file);
+    const scale = Math.min(1, 1920 / Math.max(img.width, img.height));
+    const c = document.createElement('canvas');
+    c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.85));
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const slug = file.name.replace(/\.[^.]+$/, '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'foto';
+    const rel = `media/uploads/${Date.now()}-${slug}.jpg`;
+    await putFile(WEB + rel, b64encode(bytes), 'Foto enviada pelo painel: ' + rel);
+    return rel;
+  }
+
+  // ---------- campos por tipo
+  const F = {
+    title: ['Título'], text: ['Texto', 'area'], tag: ['Etiqueta'], price: ['Preço'], priceNote: ['Obs. do preço'],
+    cta: ['Chamada (ex.: Pergunte na recepção)'], benefits: ['Benefícios (um por linha)', 'list'],
+    image: ['Foto', 'img'], hero: ['Foto larga com benefício (opcional)', 'img'], before: ['Foto ANTES', 'img'], after: ['Foto DEPOIS', 'img'],
+    background: ['Fundo (cor CSS, opcional)'], duration: ['Segundos na tela', 'num'],
+    from: ['No ar a partir de', 'date'], until: ['No ar até', 'date'],
+    feed: ['Notícias de', 'sel', [['local,brasil', 'Região + Brasil'], ['local', 'Só região'], ['esportes', 'Esportes'], ['brasil', 'Brasil'], ['all', 'Tudo']]],
+    name: ['Nome do anunciante'], headline: ['Frase principal'], contact: ['Contato (ex.: WhatsApp)'],
+    logo: ['Logo', 'img'], logoText: ['Nome ao lado do logo (se o logo for só ícone)'], qr: ['QR Code (imagem)', 'img'],
+    visualStyle: ['Estilo da foto', 'sel', [['photo', 'Foto grande'], ['screen', 'Tela de sistema'], ['tv', 'Moldura de TV']]],
+    color: ['Cor de destaque', 'color'], source: ['Fonte'],
+  };
+  const TYPES = {
+    promo: { label: 'Texto', fields: ['title', 'text', 'background', 'duration', 'from', 'until'] },
+    product: { label: 'Produto', fields: ['tag', 'title', 'text', 'benefits', 'price', 'priceNote', 'cta', 'hero', 'image', 'duration', 'from', 'until'] },
+    image: { label: 'Foto', fields: ['image', 'title', 'text', 'duration', 'from', 'until'] },
+    beforeAfter: { label: 'Antes/depois', fields: ['before', 'after', 'title', 'text', 'duration', 'from', 'until'] },
+    newsPortal: { label: 'Notícias', fields: ['title', 'feed', 'duration'] },
+    news: { label: 'Notícia', fields: ['source', 'title', 'text', 'duration'] },
+    agenda: { label: 'Agenda', fields: ['duration'] },
+    sponsor: { label: 'Patrocinado', fields: ['name', 'headline', 'text', 'benefits', 'cta', 'contact', 'logo', 'logoText', 'qr', 'image', 'visualStyle', 'color', 'duration', 'from', 'until'] },
+  };
+  const NEW = {
+    promo: { type: 'promo', title: 'Novo aviso', text: '' },
+    product: { type: 'product', tag: '', title: 'Novo produto', text: '', benefits: [], price: '', cta: 'Pergunte na recepção', image: '' },
+    image: { type: 'image', image: '', title: '' },
+    beforeAfter: { type: 'beforeAfter', before: '', after: '', title: '', text: 'Imagem com autorização do cliente.' },
+    newsPortal: { type: 'newsPortal', title: 'Notícias', feed: 'local,brasil', duration: 16 },
+    sponsor: { name: 'Novo anunciante', headline: '', text: '', benefits: [], cta: '', contact: '', logo: '', image: '', visualStyle: 'photo', color: '#c8a45c' },
+  };
+
+  const imgSrc = (p) => (/^https?:/.test(p) ? p : PLAYER + p);
+  function fieldHtml(key, val, idx) {
+    const [label, kind, opts] = F[key] || [key];
+    const id = `f-${idx}-${key}`;
+    if (kind === 'area') return `<label>${label}<textarea data-k="${key}">${esc(val)}</textarea></label>`;
+    if (kind === 'list') return `<label>${label}<textarea data-k="${key}" data-list>${esc((val || []).join('\n'))}</textarea></label>`;
+    if (kind === 'num') return `<label>${label}<input type="number" min="3" data-k="${key}" data-num value="${esc(val)}"></label>`;
+    if (kind === 'date') return `<label>${label}<input type="date" data-k="${key}" value="${esc(val)}"></label>`;
+    if (kind === 'color') return `<label>${label}<input type="color" data-k="${key}" value="${esc(val || '#c8a45c')}"></label>`;
+    if (kind === 'sel') return `<label>${label}<select data-k="${key}">${opts.map(([v, t]) => `<option value="${v}" ${v === (val || opts[0][0]) ? 'selected' : ''}>${t}</option>`).join('')}</select></label>`;
+    if (kind === 'img') return `<label>${label}<div class="img">${val ? `<img src="${esc(imgSrc(val))}" alt="">` : ''}
+      <input type="text" data-k="${key}" value="${esc(val)}" placeholder="media/... ou https://...">
+      <input type="file" accept="image/*" data-up="${key}" id="${id}" hidden><button type="button" data-pick="${id}">Enviar</button></div></label>`;
+    return `<label>${label}<input type="text" data-k="${key}" value="${esc(val)}"></label>`;
+  }
+
+  function cardHtml(it, idx, kind) {
+    const type = kind === 'sponsor' ? 'sponsor' : it.type;
+    const def = TYPES[type] || { label: type, fields: ['title', 'text', 'duration'] };
+    const title = it.headline || it.title || it.name || def.label;
+    const sub = kind === 'sponsor' ? (it.name || '') : (it.text || it.feed || '').slice(0, 70);
+    const when = [it.from && 'de ' + it.from, it.until && 'até ' + it.until].filter(Boolean).join(' ');
+    const prev = kind === 'sponsor' ? `?sponsor=${encodeURIComponent(it.id || it.name)}` : `?slide=${idx}`;
+    return `<div class="card ${it.enabled === false ? 'off' : ''}" data-kind="${kind}" data-i="${idx}">
+      <div class="row">
+        <label class="switch" title="No ar"><input type="checkbox" data-on ${it.enabled === false ? '' : 'checked'}><span></span></label>
+        <div class="t"><b>${esc(title)}</b><small><span class="badge">${esc(def.label)}</span> ${esc(sub)} ${when ? '· ' + esc(when) : ''}</small></div>
+        <button class="icon" data-act="up" title="Subir">↑</button><button class="icon" data-act="down" title="Descer">↓</button>
+        <button class="icon" data-act="edit">Editar</button>
+      </div>
+      <div class="edit" hidden>
+        ${def.fields.map((k) => fieldHtml(k, it[k], kind + idx)).join('')}
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn" href="${PLAYER + prev}" target="_blank" rel="noopener">Prévia</a>
+          <button data-act="dup">Duplicar</button><button data-act="del" style="color:var(--bad)">Apagar</button>
+        </div>
+      </div></div>`;
+  }
+
+  function render() {
+    $('slides').innerHTML = (data.slides || []).map((s, i) => cardHtml(s, i, 'slide')).join('');
+    $('sponsors').innerHTML = (data.sponsors || []).map((s, i) => cardHtml(s, i, 'sponsor')).join('');
+    $('ticker').value = (data.news || []).map((n) => (typeof n === 'string' ? n : n.title)).join('\n');
+    $('cfgDur').value = data.defaultDuration || 10;
+    $('cfgEvery').value = data.sponsorEvery || 3;
+    $('cfgName').value = (data.brand || {}).name || '';
+  }
+
+  function collectGlobals() {
+    data.news = $('ticker').value.split('\n').map((s) => s.trim()).filter(Boolean).map((title) => ({ title }));
+    data.defaultDuration = Number($('cfgDur').value) || 10;
+    data.sponsorEvery = Number($('cfgEvery').value) || 3;
+    data.brand = { ...(data.brand || {}), name: $('cfgName').value };
+  }
+
+  const listOf = (kind) => (kind === 'sponsor' ? (data.sponsors = data.sponsors || []) : (data.slides = data.slides || []));
+  const slug = (s) => String(s || 'anunciante').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+  document.addEventListener('input', (e) => {
+    const card = e.target.closest('.card[data-kind]');
+    if (e.target.id && ['ticker', 'cfgDur', 'cfgEvery', 'cfgName'].includes(e.target.id)) return markDirty();
+    if (!card || !e.target.dataset.k) return;
+    const it = listOf(card.dataset.kind)[card.dataset.i];
+    const k = e.target.dataset.k; let v = e.target.value;
+    if (e.target.hasAttribute('data-list')) v = v.split('\n').map((s) => s.trim()).filter(Boolean);
+    if (e.target.hasAttribute('data-num')) v = v ? Number(v) : undefined;
+    if (v === '' || v === undefined || (Array.isArray(v) && !v.length)) delete it[k]; else it[k] = v;
+    markDirty();
+  });
+
+  document.addEventListener('change', async (e) => {
+    const card = e.target.closest('.card[data-kind]');
+    if (!card) return;
+    const list = listOf(card.dataset.kind), it = list[card.dataset.i];
+    if (e.target.hasAttribute('data-on')) {
+      if (e.target.checked) delete it.enabled; else it.enabled = false;
+      card.classList.toggle('off', !e.target.checked); markDirty();
+    }
+    if (e.target.dataset.up && e.target.files[0]) {
+      const key = e.target.dataset.up;
+      msg('Enviando foto...');
+      try {
+        it[key] = await uploadImage(e.target.files[0]);
+        const box = e.target.closest('.img');
+        box.querySelector('input[type=text]').value = it[key];
+        let img = box.querySelector('img');
+        if (!img) { img = document.createElement('img'); box.prepend(img); }
+        img.src = URL.createObjectURL(e.target.files[0]);
+        markDirty(); msg('Foto enviada. Toque em "Salvar e publicar".');
+      } catch (err) { msg(err.message, 'bad'); }
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    const pick = e.target.dataset && e.target.dataset.pick;
+    if (pick) { $(pick).click(); return; }
+    const add = e.target.dataset && e.target.dataset.add;
+    if (add) {
+      const it = JSON.parse(JSON.stringify(NEW[add]));
+      if (add === 'sponsor') { it.id = slug(it.name) + '-' + Date.now().toString(36); listOf('sponsor').push(it); }
+      else listOf('slide').push(it);
+      render(); markDirty();
+      const sec = add === 'sponsor' ? $('sponsors') : $('slides');
+      const last = sec.lastElementChild; last.querySelector('.edit').hidden = false; last.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    const act = e.target.dataset && e.target.dataset.act;
+    const card = e.target.closest('.card[data-kind]');
+    if (!act || !card) return;
+    const list = listOf(card.dataset.kind), i = Number(card.dataset.i);
+    if (act === 'edit') { const ed = card.querySelector('.edit'); ed.hidden = !ed.hidden; return; }
+    if (act === 'up' && i > 0) [list[i - 1], list[i]] = [list[i], list[i - 1]];
+    if (act === 'down' && i < list.length - 1) [list[i + 1], list[i]] = [list[i], list[i + 1]];
+    if (act === 'dup') { const c = JSON.parse(JSON.stringify(list[i])); if (c.id) c.id += '-copia'; list.splice(i + 1, 0, c); }
+    if (act === 'del') { if (!confirm('Apagar este item?')) return; list.splice(i, 1); }
+    render(); markDirty();
+  });
+
+  $('btnLoad').onclick = () => load().catch((e) => msg(e.message, 'bad'));
+  $('btnForget').onclick = () => { store.set('tv.gh_token', ''); $('token').value = ''; msg('Chave apagada deste aparelho.'); };
+  $('btnSave').onclick = save;
+  addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+  if ($('token').value) load().catch((e) => msg(e.message, 'bad'));
+})();
+</script>
+</body>
+</html>

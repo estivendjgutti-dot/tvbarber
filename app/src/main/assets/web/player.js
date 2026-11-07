@@ -53,7 +53,8 @@
 
   // ------------------------------------------------------------------ playlist
   async function loadPlaylist() {
-    const local = await fetch('playlist.json', { cache: 'no-store' }).then((r) => r.json());
+    // ?t= fura o cache do CDN (GitHub Pages guarda ~10 min): edição no painel aparece rápido
+    const local = await fetch('playlist.json?t=' + Date.now(), { cache: 'no-store' }).then((r) => r.json());
     const remote = (local.remotePlaylistUrl || '').trim();
     if (!remote) return local;
     try {
@@ -83,9 +84,23 @@
   const isActive = (it) => it && it.enabled !== false
     && (!it.from || today() >= it.from) && (!it.until || today() <= it.until);
 
+  // Prévia (usada pelo painel): ?slide=3 mostra só o 4º slide; ?sponsor=crm4tech só esse patrocinado
+  const qs = new URLSearchParams(location.search);
+  function previewItem() {
+    if (qs.has('slide')) return (cfg.slides || [])[Number(qs.get('slide'))] || null;
+    if (qs.has('sponsor')) {
+      const sp = (cfg.sponsors || []).find((s) => (s.id || s.name) === qs.get('sponsor'));
+      return sp ? { type: 'sponsor', ...sp } : null;
+    }
+    return undefined;
+  }
+
   function nextItem() {
+    const pv = previewItem();
+    if (pv !== undefined) return pv;
     const content = (cfg.slides || []).filter(isActive)
-      .filter((it) => it.type !== 'agenda' || agendaView().list.length);
+      .filter((it) => it.type !== 'agenda' || agendaView().list.length)
+      .filter((it) => it.type !== 'newsPortal' || portalItems(it).length);
     const sponsors = (cfg.sponsors || []).filter(isActive);
     const every = Math.max(1, cfg.sponsorEvery || 3);
 
@@ -165,14 +180,87 @@
     return `<img class="${cls}" src="${esc(src)}" alt="" decoding="async">`;
   }
 
+  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor" opacity=".18"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const benefitsHtml = (list) => (Array.isArray(list) && list.length
+    ? `<ul class="benefits">${list.map((b) => `<li>${CHECK}<span>${esc(b)}</span></li>`).join('')}</ul>` : '');
+
+  // Produto com foto de benefício (imagem larga, texto à direita)
+  function productHero(it) {
+    return `
+      <div class="hero-bg">${media(it.hero)}</div>
+      <div class="hero-panel">
+        ${it.tag ? `<span class="tag">${esc(it.tag)}</span>` : ''}
+        <h2>${esc(it.title)}</h2>
+        ${it.text ? `<p>${esc(it.text)}</p>` : ''}
+        ${benefitsHtml(it.benefits)}
+        ${it.price ? `<div class="price">${esc(it.price)}${it.priceNote ? `<small>${esc(it.priceNote)}</small>` : ''}</div>` : ''}
+        ${it.cta ? `<div class="cta"><span>${esc(it.cta)}</span></div>` : ''}
+      </div>`;
+  }
+
+  // Patrocinado completo: logo + serviço + benefícios + QR (WhatsApp) + visual à direita
+  function sponsorRich(it) {
+    const visual = it.image ? `<div class="sp-visual ${esc(it.visualStyle || 'photo')}">
+        ${it.visualStyle === 'screen' ? '<div class="sp-bar"><i></i><i></i><i></i></div>' : ''}${media(it.image)}</div>` : '';
+    const brand = it.logo
+      ? `<div class="sp-brand ${it.logoText ? 'mark' : 'wide'}"><img class="sp-logo" src="${esc(it.logo)}" alt="">${it.logoText ? `<span>${esc(it.logoText)}</span>` : ''}</div>`
+      : `<div class="sp-brand mark"><span>${esc(it.logoText || it.name || '')}</span></div>`;
+    return `
+      ${visual}
+      <div class="sp-info">
+        ${brand}
+        ${it.headline ? `<h2>${esc(it.headline)}</h2>` : ''}
+        ${it.text ? `<p>${esc(it.text)}</p>` : ''}
+        ${benefitsHtml(it.benefits)}
+        ${it.cta || it.qr || it.contact ? `<div class="sp-cta">${it.qr ? `<img class="sp-qr" src="${esc(it.qr)}" alt="">` : ''}
+          <div>${it.cta ? `<b>${esc(it.cta)}</b>` : ''}${it.contact ? `<span>${esc(it.contact)}</span>` : ''}</div></div>` : ''}
+      </div>
+      <div class="chip">${esc(it.label || 'Patrocinado')}${it.name ? ' · ' + esc(it.name) : ''}</div>`;
+  }
+
+  // Portal de notícias (news.json gerado pelo GitHub Actions a partir do RSS do g1/ge)
+  let portalPos = 0;
+  function portalItems(it) {
+    const want = it.feed && it.feed !== 'all' ? String(it.feed).split(',') : null;
+    return newsData.filter((n) => n && n.title && (!want || want.includes(n.category)));
+  }
+  function ago(d) {
+    const t = Date.parse(d); if (!t) return '';
+    const m = Math.max(1, Math.round((Date.now() - t) / 60000));
+    return m < 60 ? `há ${m} min` : m < 1440 ? `há ${Math.round(m / 60)} h` : `há ${Math.round(m / 1440)} d`;
+  }
+  function newsPortal(it) {
+    const all = portalItems(it);
+    const withImg = all.filter((n) => n.image);
+    const pool = withImg.length >= 4 ? withImg : all;
+    const pick = []; for (let i = 0; i < Math.min(4, pool.length); i++) pick.push(pool[(portalPos + i) % pool.length]);
+    portalPos = (portalPos + pick.length) % Math.max(1, pool.length);
+    const [lead, ...side] = pick;
+    const src = (n) => `<span class="src">${esc(n.source || '')}${n.date ? ' · ' + ago(n.date) : ''}</span>`;
+    const img = (n, cls) => (n.image ? `<img class="${cls}" src="${esc(n.image)}" alt="" referrerpolicy="no-referrer">` : `<div class="${cls} noimg"></div>`);
+    return `
+      <div class="np-head"><span class="np-badge">${esc(it.title || 'Notícias')}</span>
+        ${newsUpdated ? `<span class="np-upd">Atualizado ${esc(new Date(newsUpdated).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }))}</span>` : ''}</div>
+      <div class="np-grid">
+        <article class="np-lead">${img(lead, 'np-img')}<div class="np-txt">${src(lead)}<h2>${esc(lead.title)}</h2>${lead.subtitle ? `<p>${esc(lead.subtitle)}</p>` : ''}</div></article>
+        <div class="np-side">${side.map((n) => `<article class="np-item">${img(n, 'np-thumb')}<div>${src(n)}<h3>${esc(n.title)}</h3></div></article>`).join('')}</div>
+      </div>`;
+  }
+
   function build(it) {
     const el = document.createElement('div');
     el.className = 'slide ' + ({
-      beforeAfter: 'ba', product: 'product', sponsor: 'sponsor',
-      news: 'news', promo: 'promo', agenda: 'agenda',
+      beforeAfter: 'ba', product: it.hero ? 'product hero' : 'product',
+      sponsor: (it.logo || it.headline) ? 'sponsor rich' : 'sponsor',
+      news: 'news', promo: 'promo', agenda: 'agenda', newsPortal: 'np',
     }[it.type] || 'full');
+    if (it.color) el.style.setProperty('--sp', it.color);
+    if (it.background && it.type === 'sponsor') el.style.background = it.background;
 
     switch (it.type) {
+      case 'newsPortal':
+        el.innerHTML = newsPortal(it);
+        break;
       case 'beforeAfter':
         el.innerHTML = `
           <div class="ba-pair">
@@ -182,6 +270,7 @@
           ${it.title || it.text ? `<div class="caption"><h2>${esc(it.title)}</h2>${it.text ? `<p>${esc(it.text)}</p>` : ''}</div>` : ''}`;
         break;
       case 'product':
+        if (it.hero) { el.innerHTML = productHero(it); break; }
         el.innerHTML = `
           <div class="p-img">${media(it.image)}</div>
           <div class="p-info">
@@ -193,6 +282,7 @@
           </div>`;
         break;
       case 'sponsor':
+        if (it.logo || it.headline) { el.innerHTML = sponsorRich(it); break; }
         el.innerHTML = `${media(it.image)}<div class="chip">${esc(it.label || 'Patrocínio')}${it.name ? ' · ' + esc(it.name) : ''}</div>`;
         break;
       case 'agenda':
@@ -292,15 +382,26 @@
   }
 
   // ------------------------------------------------------------------ ticker de notícias
+  // newsUrl aceita [{title, source}] ou {updated, items:[{title, subtitle, image, source, category, date}]}
+  let newsData = [], newsUpdated = '';
   async function loadNews() {
-    let items = (cfg.news || []).map((n) => (typeof n === 'string' ? { title: n } : n));
+    const own = (cfg.news || []).map((n) => (typeof n === 'string' ? { title: n } : n));
+    let remote = store.get('news.cache', { items: [] });
     if (cfg.newsUrl) {
       try {
-        const r = await fetch(cfg.newsUrl, { cache: 'no-store' });
-        if (r.ok) { const remote = await r.json(); items = remote.concat(items); store.set('news.cache', remote); }
-      } catch { items = store.get('news.cache', []).concat(items); }
+        const u = cfg.newsUrl + (cfg.newsUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+        const r = await fetch(u, { cache: 'no-store' });
+        if (r.ok) {
+          const j = await r.json();
+          remote = Array.isArray(j) ? { items: j } : j;
+          store.set('news.cache', remote);
+        }
+      } catch { /* offline: usa o cache */ }
     }
-    renderTicker(items.slice(0, 30));
+    newsData = (remote.items || []).filter((n) => n && n.title);
+    newsUpdated = remote.updated || '';
+    // Ticker: recados da clínica primeiro, depois algumas manchetes
+    renderTicker(own.concat(newsData.slice(0, cfg.tickerHeadlines ?? 8)).slice(0, 30));
   }
 
   function renderTicker(items) {
@@ -398,10 +499,11 @@
     intervals.forEach(clearInterval); intervals = [];
     clearTimeout(timer);
     cfg = await loadPlaylist();
+    const bootVersion = cfg.version;
     applyBrand(cfg.brand);
     clock();
     await loadAgenda();
-    loadNews();
+    await loadNews();
     contentCount = 0; cIdx = -1; sIdx = -1;
     next();
 
@@ -411,7 +513,12 @@
     intervals.push(setInterval(loadAgenda, 2 * 60000));
     // Atualiza a playlist sem cortar o slide atual
     intervals.push(setInterval(async () => {
-      try { const n = await loadPlaylist(); cfg = n; applyBrand(cfg.brand); } catch { /* mantém a atual */ }
+      try {
+        const n = await loadPlaylist();
+        // "version" mudou no playlist = código novo publicado: recarrega a página inteira
+        if (n.version && bootVersion && n.version !== bootVersion) { location.reload(); return; }
+        cfg = n; applyBrand(cfg.brand);
+      } catch { /* mantém a atual */ }
     }, (cfg.refreshMinutes || 10) * 60000));
   }
 
