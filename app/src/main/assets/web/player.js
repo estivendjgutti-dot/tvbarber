@@ -343,6 +343,14 @@
     if (act === 'stats') out.textContent = statsReport();
     if (act === 'resetStats') { store.set('sponsor.stats', {}); out.textContent = 'Relatório zerado.'; }
     if (act === 'settings') { if (A) A.openSettings(); else out.textContent = 'Disponível só no aparelho.'; }
+    if (act === 'home') {
+      if (A && A.setHomeEnabled) {
+        const on = A.setHomeEnabled(!A.isHomeEnabled());
+        out.textContent = on
+          ? 'Autostart LIGADO. Escolha "TV Launcher" como app de Início na tela que abriu. (No Samsung DeX o app não abre assim.)'
+          : 'Autostart DESLIGADO. O app abre no Samsung DeX, mas não inicia sozinho no boot.';
+      } else out.textContent = 'Disponível só no aparelho.';
+    }
     if (act === 'exitKiosk') { if (A) { A.exitKiosk(); out.textContent = 'Kiosk desativado.'; } else out.textContent = 'Disponível só no aparelho.'; }
     if (act === 'close') closeAdmin();
   });

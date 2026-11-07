@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -77,6 +78,8 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         lockLandscapeIfFullscreen()
+        useCutoutArea()
+        autoEnableHomeOnTv()
 
         container = FrameLayout(this)
         setContentView(container)
@@ -128,6 +131,41 @@ class MainActivity : Activity() {
     override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
         super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
         lockLandscapeIfFullscreen()
+    }
+
+    // Ocupa a tela inteira, inclusive ao lado do furo da câmera (celular deitado).
+    private fun useCutoutArea() {
+        window.attributes = window.attributes.apply {
+            layoutInDisplayCutoutMode =
+                if (Build.VERSION.SDK_INT >= 30) WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                else WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+    }
+
+    // ---------------------------------------------------------------- papel de tela inicial
+    // A HomeActivity (categoria HOME = autostart no boot) vem DESLIGADA no manifest, porque
+    // o Samsung DeX se recusa a abrir apps que têm tela inicial ativa. Em box/TV (leanback)
+    // ou com kiosk (Device Owner) ela liga sozinha; no celular liga pelo painel técnico.
+    private fun homeComponent() = ComponentName(this, HomeActivity::class.java)
+
+    fun isHomeEnabled(): Boolean =
+        packageManager.getComponentEnabledSetting(homeComponent()) ==
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+    fun setHomeEnabled(on: Boolean) {
+        packageManager.setComponentEnabledSetting(
+            homeComponent(),
+            if (on) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+
+    private fun autoEnableHomeOnTv() {
+        val isTv = packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+        if ((isTv || isDeviceOwner()) && !isHomeEnabled()) {
+            try { setHomeEnabled(true) } catch (e: Exception) { Log.w(TAG, "Não ativou HOME", e) }
+        }
     }
 
     // ---------------------------------------------------------------- WebView

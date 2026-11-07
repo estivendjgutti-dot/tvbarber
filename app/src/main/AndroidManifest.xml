@@ -55,10 +55,11 @@
         </activity>
 
         <!-- Candidato a launcher padrão (tela Início): é isso que dá autostart no boot.
-             Activity separada (só repassa pra MainActivity) porque o Samsung DeX
-             bloqueia abrir uma Activity que seja HOME. -->
+             Vem DESLIGADA: o Samsung DeX recusa abrir apps com tela inicial ativa.
+             Liga sozinha em box/TV (leanback) ou kiosk; no celular, pelo painel técnico. -->
         <activity
             android:name=".HomeActivity"
+            android:enabled="false"
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"

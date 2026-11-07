@@ -66,7 +66,8 @@ GitHub › Settings › Secrets › Actions: `KEYSTORE_BASE64` (conteúdo do .b6
 ## Instalação no box
 
 1. Instale o APK e defina como app Início padrão (Configurações › Apps › Apps padrão › Início).
-   Isso dá o autostart no boot.
+   Isso dá o autostart no boot. Em box/Android TV o papel de Início liga sozinho; no celular ele vem
+   desligado (o Samsung DeX não abre apps de tela inicial) e liga pelo painel técnico › *Autostart*.
 2. **Kiosk total (opcional)**: box resetado, sem conta Google, depuração USB/ADB ligada:
    `adb shell dpm set-device-owner com.estiven4tech.tvlauncher/.AdminReceiver`
    Para sair: painel técnico › *Sair do modo kiosk*.

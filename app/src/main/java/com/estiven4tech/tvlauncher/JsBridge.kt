@@ -99,6 +99,30 @@ class JsBridge(
         activity.runOnUiThread { activity.exitKiosk() }
     }
 
+    /** Autostart no boot (app como tela Início). Desligado = abre no Samsung DeX. */
+    @JavascriptInterface
+    fun isHomeEnabled(): Boolean {
+        if (!isTrusted()) return false
+        return activity.isHomeEnabled()
+    }
+
+    /** Liga/desliga o papel de tela Início. Ao ligar, abre a tela do Android pra escolher o app padrão. */
+    @JavascriptInterface
+    fun setHomeEnabled(on: Boolean): Boolean {
+        if (!isTrusted()) return false
+        activity.runOnUiThread {
+            activity.setHomeEnabled(on)
+            if (on) {
+                val i = Intent(Settings.ACTION_HOME_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                i.resolveActivity(pm)?.packageName?.let { pkg ->
+                    activity.allowInKiosk(pkg)
+                    activity.startActivity(i)
+                }
+            }
+        }
+        return on
+    }
+
     @JavascriptInterface
     fun deviceInfo(): String {
         if (!isTrusted()) return "{}"
@@ -110,6 +134,7 @@ class JsBridge(
             .put("appVersion", pInfo.versionName)
             .put("isTv", pm.hasSystemFeature(PackageManager.FEATURE_LEANBACK))
             .put("kiosk", activity.isDeviceOwner())
+            .put("autostart", activity.isHomeEnabled())
             .put("online", activity.isOnline())
             .toString()
     }
