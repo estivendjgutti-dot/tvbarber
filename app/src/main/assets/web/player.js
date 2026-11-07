@@ -42,6 +42,15 @@
   setTimeout(fit, 500);   // barras do Android somem depois do primeiro desenho
   fit();
 
+  // No navegador (Chrome do Android não tem F11): o 1º toque/tecla/clique põe em tela cheia.
+  // O navegador só permite isso depois de um gesto do usuário. No app (WebView) não precisa.
+  function goFullscreen() {
+    const el = document.documentElement;
+    if (A || document.fullscreenElement || !el.requestFullscreen) return;
+    el.requestFullscreen({ navigationUI: 'hide' }).then(fit).catch(() => {});
+  }
+  ['click', 'touchend', 'keydown'].forEach((ev) => addEventListener(ev, goFullscreen));
+
   // ------------------------------------------------------------------ playlist
   async function loadPlaylist() {
     const local = await fetch('playlist.json', { cache: 'no-store' }).then((r) => r.json());
