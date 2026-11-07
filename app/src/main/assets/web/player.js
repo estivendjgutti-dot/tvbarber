@@ -502,7 +502,7 @@
     if (!act) return;
     const out = $('adminOut');
     if (act !== 'quit') quitArmed = false;
-    if (act === 'reload') { closeAdmin(); boot(); }
+    if (act === 'reload') { out.textContent = 'Recarregando...'; location.reload(); }   // página inteira: pega conteúdo E código novos
     if (act === 'stats') out.textContent = statsReport();
     if (act === 'resetStats') { store.set('sponsor.stats', {}); out.textContent = 'Relatório zerado.'; }
     if (act === 'apps') showApps();

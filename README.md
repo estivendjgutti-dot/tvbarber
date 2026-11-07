@@ -50,7 +50,7 @@ A TV atualiza a cada 2 min e guarda cache se ficar sem internet. Título do even
 | Atalho | O que faz |
 |---|---|
 | ← → | slide anterior / próximo |
-| ↑ ↑ ↓ ↓ | abre o **painel técnico** (abrir outro app, configurações, autostart, relatório) |
+| ↑ ↑ ↓ ↓ | abre o **painel técnico** (abrir outro app, configurações, autostart, relatório; "Recarregar conteúdo" recarrega a página inteira, pegando também código novo) |
 | **↓ ↓ ↑ ↑** | **fecha o TV Launcher** direto |
 | mexer o mouse / tocar | aparece o cursor e o botão **⚙ Menu** (abre o painel técnico); somem após ~3,5 s parado |
 
