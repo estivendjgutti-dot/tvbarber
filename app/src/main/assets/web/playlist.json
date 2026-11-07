@@ -11,7 +11,7 @@
   "tickerSpeed": 110,
   "agendaUrl": "",
   "agendaPrivacy": "first",
-  "agendaBackground": "media/fundo-agenda.png",
+  "agendaBackground": "media/fundo-agenda.jpg",
   "brand": {
     "name": "Leandro Sales | Prótese Capilar",
     "logo": "https://leandrosales.netlify.app/assets/logo-mark.jpg",
@@ -25,8 +25,8 @@
     },
     {
       "type": "beforeAfter",
-      "before": "media/antes-1.png",
-      "after": "media/depois-1.png",
+      "before": "media/antes-1.jpg",
+      "after": "media/depois-1.jpg",
       "title": "Volte a se olhar no espelho com confiança",
       "text": "Imagem ilustrativa. Resultados reais só com autorização do cliente.",
       "duration": 12
@@ -38,7 +38,7 @@
     },
     {
       "type": "product",
-      "image": "media/produto-1.png",
+      "image": "media/produto-1.jpg",
       "tag": "Cuidados pós-aplicação",
       "title": "Kit manutenção do sistema capilar",
       "text": "Shampoo e condicionador específicos para prolongar a vida útil da prótese.",
@@ -48,13 +48,13 @@
     },
     {
       "type": "image",
-      "image": "media/ambiente.png",
+      "image": "media/ambiente.jpg",
       "title": "Procedimento em uma única sessão",
       "text": "Aplicação e corte, sem cirurgia, sem dor e sem tempo de recuperação"
     },
     {
       "type": "product",
-      "image": "media/produto-2.png",
+      "image": "media/produto-2.jpg",
       "tag": "Fixação",
       "title": "Fixador de alta duração",
       "text": "Pensado para treino, natação e rotina diária.",
@@ -77,12 +77,12 @@
     {
       "id": "patrocinador-1",
       "name": "Academia (exemplo)",
-      "image": "media/patrocinador-1.png"
+      "image": "media/patrocinador-1.jpg"
     },
     {
       "id": "patrocinador-2",
       "name": "Barbearia (exemplo)",
-      "image": "media/patrocinador-2.png",
+      "image": "media/patrocinador-2.jpg",
       "from": "2026-11-01",
       "until": "2027-01-31"
     }

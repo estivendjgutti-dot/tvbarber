@@ -14,7 +14,7 @@ Editar `assets/web/` -> testar no navegador (`python3 -m http.server` na pasta w
 O app **não compila em ambiente sem acesso ao Google/Maven**; o build de verdade é o do GitHub Actions.
 
 ## Pendências
-1. **Imagens**: as 8 geradas (Gemini via Figma, arquivo `7uikGniFSTIjhwTGT1H6PG`) precisam ser exportadas e salvas em `assets/web/media/` com os nomes: `antes-1`, `depois-1`, `produto-1`, `produto-2`, `ambiente`, `patrocinador-1`, `patrocinador-2`, `fundo-agenda` (.png). Hoje são placeholders "(trocar)". Links do Figma expiram em 7 dias.
+1. **Imagens**: as 8 geradas (Gemini via Figma, arquivo `7uikGniFSTIjhwTGT1H6PG`) já estão em `assets/web/media/` como `.jpg` (`antes-1`, `depois-1`, `produto-1`, `produto-2`, `ambiente`, `patrocinador-1`, `patrocinador-2`, `fundo-agenda`). Pendente: `antes-1` e `depois-1` mostram pessoas diferentes, trocar por um par coerente (ou fotos reais com autorização escrita).
 2. **Logo**: hoje vem de `https://leandrosales.netlify.app/assets/logo-mark.jpg` (só online). Baixar para `media/`.
 3. **Assinatura fixa** do APK (secrets KEYSTORE_BASE64/KEYSTORE_PASSWORD/KEY_ALIAS/KEY_PASSWORD, ver README). Sem isso cada build tem chave diferente.
 4. **Agenda real**: instalar o Apps Script e preencher `agendaUrl`.
