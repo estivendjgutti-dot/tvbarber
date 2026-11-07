@@ -9,10 +9,12 @@
 html, body { width: 100%; height: 100%; background: #000; overflow: hidden; cursor: none; }
 body { font-family: system-ui, "Roboto", "Segoe UI", sans-serif; color: var(--text); }
 
+/* Palco: 1920x1080 de referência. O player.js ajusta largura/altura à proporção da tela
+   e escala tudo, então preenche 100% sem cortar e sem faixa preta (16:9, 19:9, 4:3...). */
 #stage {
-  position: absolute; left: 50%; top: 50%;
+  position: fixed; left: 0; top: 0;
   width: 1920px; height: 1080px;
-  transform-origin: center center;
+  transform-origin: 0 0;
   background: var(--primary);
   overflow: hidden;
 }
@@ -103,12 +105,12 @@ h2 { font-size: 64px; line-height: 1.1; font-weight: 800; }
 .ticker-track { flex: 1; overflow: hidden; height: 100%; position: relative; }
 #tickerText {
   position: absolute; top: 50%; white-space: nowrap; font-size: 36px;
-  transform: translate(1920px, -50%);
+  transform: translate(var(--stage-w, 1920px), -50%);
   will-change: transform;
 }
 #tickerText .sep { color: var(--accent); margin: 0 34px; }
 #tickerText .src { color: var(--muted); font-size: 26px; margin-left: 10px; }
-@keyframes tick { from { transform: translate(1920px, -50%); } to { transform: translate(-100%, -50%); } }
+@keyframes tick { from { transform: translate(var(--stage-w, 1920px), -50%); } to { transform: translate(-100%, -50%); } }
 
 #progress { position: absolute; left: 0; bottom: 96px; height: 5px; width: 0; background: var(--accent); z-index: 6; }
 

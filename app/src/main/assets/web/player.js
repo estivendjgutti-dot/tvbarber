@@ -17,11 +17,29 @@
   const history = [];
 
   // ------------------------------------------------------------------ escala do palco
+  // Escala pela menor dimensão e estica o palco na outra, para cobrir a tela toda
+  // sem cortar nada (o layout interno é fluido). Usa a área visível real: no Chrome
+  // do celular/DeX o innerWidth pode vir maior que a tela e o palco ficava cortado.
+  let stageW = 1920;
   function fit() {
-    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-    $('stage').style.transform = `translate(-50%, -50%) scale(${s})`;
+    const vv = window.visualViewport;
+    const vw = Math.round((vv && vv.width) || document.documentElement.clientWidth || innerWidth);
+    const vh = Math.round((vv && vv.height) || document.documentElement.clientHeight || innerHeight);
+    if (!vw || !vh) return;
+    const s = Math.min(vw / 1920, vh / 1080);
+    const st = $('stage');
+    stageW = Math.ceil(vw / s);
+    st.style.width = stageW + 'px';
+    st.style.height = Math.ceil(vh / s) + 'px';
+    st.style.transform = `scale(${s})`;
+    st.style.setProperty('--stage-w', stageW + 'px');
   }
   addEventListener('resize', fit);
+  addEventListener('orientationchange', fit);
+  document.addEventListener('fullscreenchange', fit);
+  if (window.visualViewport) visualViewport.addEventListener('resize', fit);
+  addEventListener('load', fit);
+  setTimeout(fit, 500);   // barras do Android somem depois do primeiro desenho
   fit();
 
   // ------------------------------------------------------------------ playlist
@@ -283,7 +301,7 @@
     t.innerHTML = items.map((n) => `${esc(n.title)}${n.source ? `<span class="src">${esc(n.source)}</span>` : ''}`)
       .join('<span class="sep">●</span>');
     const pxPerSec = cfg.tickerSpeed || 110;
-    const secs = (t.scrollWidth + 1920) / pxPerSec;
+    const secs = (t.scrollWidth + stageW) / pxPerSec;
     t.style.animation = 'none'; void t.offsetWidth;
     t.style.animation = `tick ${secs}s linear infinite`;
   }

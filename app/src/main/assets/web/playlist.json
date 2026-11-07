@@ -14,7 +14,7 @@
   "agendaBackground": "media/fundo-agenda.jpg",
   "brand": {
     "name": "Leandro Sales | Prótese Capilar",
-    "logo": "https://leandrosales.netlify.app/assets/logo-mark.jpg",
+    "logo": "media/logo.png",
     "primary": "#0b1020",
     "accent": "#c8a45c"
   },

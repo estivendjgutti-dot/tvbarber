@@ -6,6 +6,8 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -74,6 +76,7 @@ class MainActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        lockLandscapeIfFullscreen()
 
         container = FrameLayout(this)
         setContentView(container)
@@ -101,7 +104,7 @@ class MainActivity : Activity() {
         if (hasFocus) enterImmersive()
     }
 
-    // Launcher (HOME) recebe novo intent quando o usuário aperta Home: volta pro menu.
+    // Botão Home -> HomeActivity -> novo intent aqui: volta pro menu.
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         js("window.onAndroidHome && window.onAndroidHome()")
@@ -112,6 +115,19 @@ class MainActivity : Activity() {
         webView?.destroy()
         webView = null
         super.onDestroy()
+    }
+
+    // Celular em tela cheia: trava em paisagem. Em janela (DeX/multi-janela) deixa livre,
+    // senão a Samsung trata o app como "não redimensionável" e mostra o aviso de proporção.
+    private fun lockLandscapeIfFullscreen() {
+        requestedOrientation =
+            if (isInMultiWindowMode) ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+    }
+
+    override fun onMultiWindowModeChanged(isInMultiWindowMode: Boolean, newConfig: Configuration) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode, newConfig)
+        lockLandscapeIfFullscreen()
     }
 
     // ---------------------------------------------------------------- WebView

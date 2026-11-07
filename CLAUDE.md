@@ -14,8 +14,8 @@ Editar `assets/web/` -> testar no navegador (`python3 -m http.server` na pasta w
 O app **não compila em ambiente sem acesso ao Google/Maven**; o build de verdade é o do GitHub Actions.
 
 ## Pendências
-1. **Imagens**: as 8 geradas (Gemini via Figma, arquivo `7uikGniFSTIjhwTGT1H6PG`) já estão em `assets/web/media/` como `.jpg` (`antes-1`, `depois-1`, `produto-1`, `produto-2`, `ambiente`, `patrocinador-1`, `patrocinador-2`, `fundo-agenda`). Pendente: `antes-1` e `depois-1` mostram pessoas diferentes, trocar por um par coerente (ou fotos reais com autorização escrita).
-2. **Logo**: hoje vem de `https://leandrosales.netlify.app/assets/logo-mark.jpg` (só online). Baixar para `media/`.
+1. **Imagens**: as 8 geradas (Gemini via Figma, arquivo `7uikGniFSTIjhwTGT1H6PG`) já estão em `assets/web/media/` como `.jpg` (`antes-1`, `depois-1`, `produto-1`, `produto-2`, `ambiente`, `patrocinador-1`, `patrocinador-2`, `fundo-agenda`). `antes-1`/`depois-1` são o antes/depois da mesma pessoa (confirmado pelo dono); continuam sendo imagens de IA, trocar por fotos reais só com autorização escrita.
+2. ~~Logo~~ feito: `media/logo.png` (circular, fundo transparente, 256px), usado em `brand.logo`. Funciona offline.
 3. **Assinatura fixa** do APK (secrets KEYSTORE_BASE64/KEYSTORE_PASSWORD/KEY_ALIAS/KEY_PASSWORD, ver README). Sem isso cada build tem chave diferente.
 4. **Agenda real**: instalar o Apps Script e preencher `agendaUrl`.
 5. Produtos/preços no playlist são **exemplos** (o site da clínica não lista produtos): confirmar com o Leandro.

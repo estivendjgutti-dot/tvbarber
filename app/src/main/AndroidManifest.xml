@@ -26,14 +26,23 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:resizeableActivity="true"
         android:theme="@style/Theme.TvLauncher">
 
+        <!-- Aceita qualquer proporção (16:9 da TV, 19:9 do celular, janela do DeX).
+             Sem isso o Android/Samsung mostra o aviso "app não projetado para esta tela" e faz letterbox. -->
+        <meta-data android:name="android.max_aspect" android:value="2.4" />
+        <meta-data android:name="com.samsung.android.keepalive.density" android:value="true" />
+        <meta-data android:name="com.samsung.android.multidisplay.keep_process_alive" android:value="true" />
+
+        <!-- Orientação: travada em paisagem pelo código (MainActivity), não aqui.
+             screenOrientation fixo no manifest é o que dispara o modo de compatibilidade em tela grande/DeX. -->
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboard|keyboardHidden|navigation|uiMode"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|keyboard|keyboardHidden|navigation|uiMode"
             android:exported="true"
             android:launchMode="singleTask"
-            android:screenOrientation="sensorLandscape"
+            android:resizeableActivity="true"
             android:stateNotNeeded="true">
 
             <!-- Aparece como app normal (celular) e na fileira de apps da Android TV -->
@@ -43,7 +52,18 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
 
-            <!-- Candidato a launcher padrão (tela Início): é isso que dá autostart no boot -->
+        </activity>
+
+        <!-- Candidato a launcher padrão (tela Início): é isso que dá autostart no boot.
+             Activity separada (só repassa pra MainActivity) porque o Samsung DeX
+             bloqueia abrir uma Activity que seja HOME. -->
+        <activity
+            android:name=".HomeActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:stateNotNeeded="true"
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
