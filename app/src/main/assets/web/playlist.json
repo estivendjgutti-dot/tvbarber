@@ -1,0 +1,136 @@
+{
+  "screenId": "leandro-sales-recepcao-1",
+  "remotePlaylistUrl": "",
+  "refreshMinutes": 10,
+  "defaultDuration": 10,
+  "sponsorDuration": 12,
+  "sponsorEvery": 3,
+  "statsUrl": "",
+  "newsUrl": "",
+  "newsRefreshMinutes": 15,
+  "tickerSpeed": 110,
+  "agendaUrl": "",
+  "agendaPrivacy": "first",
+  "agendaBackground": "media/fundo-agenda.png",
+  "brand": {
+    "name": "Leandro Sales | Prótese Capilar",
+    "logo": "https://leandrosales.netlify.app/assets/logo-mark.jpg",
+    "primary": "#0b1020",
+    "accent": "#c8a45c"
+  },
+  "slides": [
+    {
+      "type": "agenda",
+      "duration": 14
+    },
+    {
+      "type": "beforeAfter",
+      "before": "media/antes-1.png",
+      "after": "media/depois-1.png",
+      "title": "Volte a se olhar no espelho com confiança",
+      "text": "Imagem ilustrativa. Resultados reais só com autorização do cliente.",
+      "duration": 12
+    },
+    {
+      "type": "promo",
+      "title": "Avaliação inicial gratuita",
+      "text": "Individual, presencial e sem compromisso. Sistema capilar personalizado: cor, densidade, textura e linha frontal sob medida."
+    },
+    {
+      "type": "product",
+      "image": "media/produto-1.png",
+      "tag": "Cuidados pós-aplicação",
+      "title": "Kit manutenção do sistema capilar",
+      "text": "Shampoo e condicionador específicos para prolongar a vida útil da prótese.",
+      "price": "R$ 149,90",
+      "priceNote": "(exemplo)",
+      "cta": "Pergunte na recepção"
+    },
+    {
+      "type": "image",
+      "image": "media/ambiente.png",
+      "title": "Procedimento em uma única sessão",
+      "text": "Aplicação e corte, sem cirurgia, sem dor e sem tempo de recuperação"
+    },
+    {
+      "type": "product",
+      "image": "media/produto-2.png",
+      "tag": "Fixação",
+      "title": "Fixador de alta duração",
+      "text": "Pensado para treino, natação e rotina diária.",
+      "price": "R$ 89,90",
+      "priceNote": "(exemplo)",
+      "cta": "Pergunte na recepção"
+    },
+    {
+      "type": "promo",
+      "title": "4,9 ★ no Google",
+      "text": "Mais de 81 avaliações de clientes. Conte sua experiência: peça o link na recepção."
+    },
+    {
+      "type": "promo",
+      "title": "Siga @leandrosalesprotesecapilar_",
+      "text": "WhatsApp (12) 99106-1683 · R. Armando D'Oliveira Cobra, 50, Sala 1101, Jardim Aquarius, São José dos Campos"
+    }
+  ],
+  "sponsors": [
+    {
+      "id": "patrocinador-1",
+      "name": "Academia (exemplo)",
+      "image": "media/patrocinador-1.png"
+    },
+    {
+      "id": "patrocinador-2",
+      "name": "Barbearia (exemplo)",
+      "image": "media/patrocinador-2.png",
+      "from": "2026-11-01",
+      "until": "2027-01-31"
+    }
+  ],
+  "news": [
+    {
+      "title": "Wi-Fi para clientes: peça a senha na recepção"
+    },
+    {
+      "title": "Manutenção periódica prolonga a durabilidade do seu sistema capilar"
+    },
+    {
+      "title": "Configure \"newsUrl\" para puxar notícias automaticamente",
+      "source": "Sistema"
+    }
+  ],
+  "agenda": [
+    {
+      "time": "09:00",
+      "client": "Carlos Eduardo Silva",
+      "service": "Avaliação inicial"
+    },
+    {
+      "time": "10:30",
+      "client": "Rafael Mendes Costa",
+      "service": "Aplicação do sistema capilar",
+      "duration": 120
+    },
+    {
+      "time": "14:00",
+      "client": "Thiago Almeida",
+      "service": "Manutenção"
+    },
+    {
+      "time": "15:30",
+      "client": "Bruno Oliveira Santos",
+      "service": "Avaliação inicial"
+    },
+    {
+      "time": "17:00",
+      "client": "Marcelo Ferreira",
+      "service": "Manutenção"
+    },
+    {
+      "time": "18:30",
+      "client": "Diego Martins",
+      "service": "Aplicação do sistema capilar",
+      "duration": 120
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TV Clínica</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Palco fixo 1920x1080, escalado pra qualquer TV (HD, Full HD, 4K) -->
+  <div id="stage">
+    <header id="topbar">
+      <div class="brand"><img id="logo" alt=""><span id="brandName"></span></div>
+      <div class="clock"><span id="time">--:--</span><span id="date"></span></div>
+    </header>
+
+    <main id="slides"></main>
+
+    <footer id="ticker">
+      <div class="ticker-label">NOTÍCIAS</div>
+      <div class="ticker-track"><div id="tickerText"></div></div>
+    </footer>
+
+    <div id="progress"></div>
+
+    <!-- Painel técnico: ↑ ↑ ↓ ↓ no controle (ou teclado) -->
+    <div id="admin" hidden>
+      <div class="admin-box">
+        <h2>Painel técnico</h2>
+        <pre id="adminInfo"></pre>
+        <div class="admin-actions">
+          <button data-act="reload">Recarregar conteúdo</button>
+          <button data-act="stats">Relatório de patrocinadores</button>
+          <button data-act="resetStats">Zerar relatório</button>
+          <button data-act="settings">Configurações do aparelho</button>
+          <button data-act="exitKiosk">Sair do modo kiosk</button>
+          <button data-act="close">Fechar</button>
+        </div>
+        <pre id="adminOut"></pre>
+      </div>
+    </div>
+  </div>
+  <script src="player.js"></script>
+</body>
+</html>
